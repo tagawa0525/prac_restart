@@ -21,20 +21,20 @@ pub mod platform {
         assert!(uptime.as_secs() > 0);
     }
 
-    pub fn shutdown() {
-        // // デバッグ時ににシャットダウンすると面倒なので、コメントアウト
-        // Command::new("shutdown")
-        //     .arg("/s")
-        //     .arg("/f")
-        //     .arg("/t")
-        //     .arg("0")
-        //     .spawn()
-        //     .unwrap();
+    pub fn shutdown() -> Result<(), std::io::Error> {
+        // デバッグ時ににシャットダウンすると面倒なので、コメントアウト
+        Command::new("shutdown")
+            .arg("/s")
+            .arg("/f")
+            .arg("/t")
+            .arg("0")
+            .spawn()?;
         println!("shutdown!");
+        Ok(())
     }
     #[test]
     fn test_shutdown() {
-        shutdown();
+        let _ = shutdown();
     }
 
     pub fn show_alert(message: &str) {
