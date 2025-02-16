@@ -6,8 +6,12 @@ pub mod platform {
     pub fn get_system_uptime() -> Duration {
         use winapi::um::sysinfoapi::GetTickCount64;
 
+        // // 本当の起動時間を使うとデバッグが面倒なので、コメントアウト
+        // use std::time::Instant;
+        // return Instant::now().elapsed();
+
         let ticks = unsafe { GetTickCount64() };
-        Duration::from_millis(ticks)
+        return Duration::from_millis(ticks);
     }
 
     #[test]
@@ -18,7 +22,7 @@ pub mod platform {
     }
 
     pub fn shutdown() {
-        // デバッグ時ににシャットダウンすると面倒なので、コメントアウト
+        // // デバッグ時ににシャットダウンすると面倒なので、コメントアウト
         // Command::new("shutdown")
         //     .arg("/s")
         //     .arg("/f")

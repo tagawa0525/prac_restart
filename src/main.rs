@@ -11,16 +11,15 @@ mod for_mac;
 #[cfg(target_os = "macos")]
 use crate::for_mac::platform;
 
-const MIN: u64 = 2; // 本当は60 sec
+const MIN: u64 = 6; // 本当は60 sec
 const HOUR: u64 = MIN * MIN;
 fn main() {
-    let start_time = Instant::now();
     let total_time = Duration::from_secs(6 * HOUR); // 仕様では72時間だが、デバッグのため短くしている。
     let alerts = [
         // total_time - Duration::from_secs(24 * HOUR),
         // total_time - Duration::from_secs(6 * HOUR),
         total_time - Duration::from_secs(3 * HOUR),
-        total_time - Duration::from_secs(HOUR),
+        total_time - Duration::from_secs(1 * HOUR),
         // 本当は30 MINとしたいが、デバッグ時の加速の関係で分数にする。
         total_time - Duration::from_secs(30 / 60 * HOUR),
         // total_time - Duration::from_secs(15 / 60 * HOUR),
@@ -29,12 +28,15 @@ fn main() {
     ];
     println!("{:?}", alerts);
 
+    let start_time = Instant::now() - platform::get_system_uptime();
     for alert_time in alerts.iter() {
         let elasped_time = start_time.elapsed();
-        if *alert_time < elasped_time {
+        if *alert_time < (elasped_time + Duration::from_secs(1)) {
             continue;
         }
-        thread::sleep(*alert_time - elasped_time);
+
+        let sleeped_time = *alert_time - elasped_time;
+        thread::sleep(sleeped_time);
 
         let h = alert_time.as_secs() / HOUR;
         let m: u64 = (alert_time.as_secs() % HOUR) / MIN;
