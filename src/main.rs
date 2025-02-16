@@ -1,4 +1,3 @@
-use std::thread;
 use std::time::{Duration, Instant};
 
 #[cfg(target_os = "windows")]
@@ -13,6 +12,8 @@ use crate::for_mac::platform;
 
 const MIN: u64 = 6; // 本当は60 sec
 const HOUR: u64 = MIN * MIN;
+const COUNTDOWN_MIN: u64 = 5;
+
 fn main() {
     let total_time = Duration::from_secs(6 * HOUR); // 仕様では72時間だが、デバッグのため短くしている。
     let alerts = [
@@ -26,7 +27,7 @@ fn main() {
         // total_time - Duration::from_secs(10 / 60 * HOUR),
         // total_time - Duration::from_secs(5 / 60 * HOUR),
     ];
-    println!("{:?}", alerts);
+    // println!("{:?}", alerts);
 
     let start_time = Instant::now() - platform::get_system_uptime();
     for alert_time in alerts.iter() {
@@ -36,7 +37,7 @@ fn main() {
         }
 
         let sleeped_time = *alert_time - elasped_time;
-        thread::sleep(sleeped_time);
+        std::thread::sleep(sleeped_time);
 
         let h = alert_time.as_secs() / HOUR;
         let m: u64 = (alert_time.as_secs() % HOUR) / MIN;
@@ -46,10 +47,9 @@ fn main() {
         ));
     }
 
-    let countdown_time = Duration::from_secs(5);
-    for i in (1..=countdown_time.as_secs()).rev() {
+    for i in (1..COUNTDOWN_MIN + 1).rev() {
         platform::show_alert(&format!("強制シャットダウンまで {} 分", i));
-        thread::sleep(Duration::from_secs(1 * MIN));
+        std::thread::sleep(Duration::from_secs(1 * MIN));
     }
 
     platform::shutdown();
