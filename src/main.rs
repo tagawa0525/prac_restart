@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use std::time::{Duration, Instant};
 
 #[cfg(target_os = "windows")]
@@ -14,7 +16,7 @@ const MIN: u64 = 6; // 本当は60 sec
 const HOUR: u64 = MIN * MIN;
 const COUNTDOWN_MIN: u64 = 5;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let total_time = Duration::from_secs(6 * HOUR); // 仕様では72時間だが、デバッグのため短くしている。
     let alerts = [
         // total_time - Duration::from_secs(24 * HOUR),
@@ -52,5 +54,6 @@ fn main() {
         std::thread::sleep(Duration::from_secs(1 * MIN));
     }
 
-    platform::shutdown();
+    platform::shutdown()?;
+    Ok(())
 }
